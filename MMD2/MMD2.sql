@@ -27,7 +27,7 @@ CREATE TABLE rating
 )
 
 INSERT INTO [user]
-    (id, full_name, username, gander)
+    (id, full_name, username, gender)
 VALUES
     (1, 'Emily Johnson', 'emilyj', 'Female'),
     (2, 'Alex Rodriguez', 'alexr', 'Male'),
@@ -96,12 +96,101 @@ VALUES
     (17, 7, 9),
     (18, 8, 8),
     (19, 9, 7),
-    (20, 10, 9)
+    (20, 10, 9),
+    (1, 2, 7),
+    (2, 3, 9),
+    (3, 4, 8),
+    (4, 5, 6),
+    (5, 6, 9),
+    (6, 7, 7),
+    (7, 8, 10),
+    (8, 9, 8),
+    (9, 10, 7),
+    (10, 1, 6),
+    (11, 2, 9),
+    (12, 3, 8),
+    (13, 4, 7),
+    (14, 5, 9),
+    (15, 6, 6),
+    (16, 7, 8),
+    (17, 8, 7),
+    (18, 9, 9),
+    (19, 10, 8),
+    (20, 1, 10),
+    (1, 3, 4),
+    (2, 4, 5),
+    (3, 5, 6),
+    (4, 6, 3),
+    (5, 7, 4),
+    (6, 8, 5),
+    (7, 9, 6),
+    (8, 10, 7),
+    (9, 1, 4),
+    (10, 2, 3),
+    (11, 3, 5),
+    (12, 4, 4),
+    (13, 5, 6),
+    (14, 6, 3),
+    (15, 7, 7),
+    (16, 8, 5),
+    (17, 9, 4),
+    (18, 10, 6),
+    (19, 1, 3),
+    (20, 2, 5),
+    (1, 15, 8),
+    (2, 12, 9),
+    (3, 14, 7),
+    (4, 11, 6),
+    (5, 17, 8),
+    (6, 19, 10),
+    (7, 20, 9),
+    (8, 16, 8),
+    (9, 13, 7),
+    (10, 18, 9),
+    (11, 11, 8),
+    (12, 12, 7),
+    (13, 13, 6),
+    (14, 14, 9),
+    (15, 15, 8),
+    (16, 16, 10),
+    (17, 17, 9),
+    (18, 18, 8),
+    (19, 19, 7),
+    (20, 20, 9)
 
+-- Izvada visus reitingus, kuri lielāki par 7 (ar lietotājvardiem un filmu nosaukumiem)
+SELECT [user].username, movie.title, rating.rating
+FROM rating
+    JOIN [user] ON rating.user_id = [user].id
+    JOIN movie ON rating.movie_id = movie.id
+WHERE rating.rating > 7
+ORDER BY rating DESC
 
+-- Izvada filmu videjo gadu pie katra reitinga, kuram ir vismaz 3 ieraksti, izņemot 10
+SELECT rating.rating, count(*) as amount, avg(movie.year) as [average year]
+FROM rating
+    JOIN movie on rating.movie_id = movie.id
+WHERE rating.rating <> 10
+GROUP BY rating.rating
+HAVING count(*) > 3
+ORDER BY rating DESC
+
+-- Izvada ierakstu skaitu sagrupētu pēc vērtibas un lietotāja dzimuma
+SELECT rating.rating, [user].gender, count(*) as count
+FROM rating
+    JOIN [user] on rating.user_id = [user].id
+GROUP BY rating.rating, [user].gender
+ORDER BY rating DESC
+
+-- Izvada katra lietotaja reitingu skaitu.
+SELECT username, (SELECT count(*)
+    FROM rating
+    WHERE rating.user_id = [user].id) as count
+from [user]
+
+-- Izvada visus reitingus, kuru vertiba ir virs vidējās
 SELECT * FROM rating
-SELECT * FROM movie
-SELECT * FROM [user]
+where rating > (SELECT avg(rating) FROM rating)
 
 DELETE FROM rating
 DELETE FROM	movie
