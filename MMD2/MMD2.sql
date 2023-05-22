@@ -193,7 +193,7 @@ SELECT * FROM rating
 where rating > (SELECT avg(rating) FROM rating)
 
 DELETE FROM rating
-DELETE FROM	movie
+DELETE FROM movie
 DELETE FROM [user]
 
 DROP TABLE rating
