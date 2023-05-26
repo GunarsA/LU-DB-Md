@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS rating
-DROP TABLE IF EXISTS [user]
+DROP TABLE IF EXISTS users
 DROP TABLE IF EXISTS movie
 
-CREATE TABLE [user]
+CREATE TABLE users
 (
     id INT PRIMARY KEY,
     full_name NVARCHAR(64) NOT NULL,
@@ -21,12 +21,12 @@ CREATE TABLE movie
 CREATE TABLE rating
 (
     movie_id INT FOREIGN KEY REFERENCES movie,
-    user_id INT FOREIGN KEY REFERENCES [user],
+    user_id INT FOREIGN KEY REFERENCES users,
     rating INT CHECK (rating>=0 AND rating <= 10),
     CONSTRAINT id PRIMARY KEY (user_id,movie_id)
 )
 
-INSERT INTO [user]
+INSERT INTO users
     (id, full_name, username, gender)
 VALUES
     (1, 'Emily Johnson', 'emilyj', 'Female'),
@@ -159,9 +159,9 @@ VALUES
     (20, 20, 9)
 
 -- Izvada visus reitingus, kuri lielāki par 7 (ar lietotājvardiem un filmu nosaukumiem)
-SELECT [user].username, movie.title, rating.rating
+SELECT users.username, movie.title, rating.rating
 FROM rating
-    JOIN [user] ON rating.user_id = [user].id
+    JOIN users ON rating.user_id = users.id
     JOIN movie ON rating.movie_id = movie.id
 WHERE rating.rating > 7
 ORDER BY rating DESC
@@ -176,17 +176,17 @@ HAVING count(*) > 3
 ORDER BY rating DESC
 
 -- Izvada ierakstu skaitu sagrupētu pēc vērtibas un lietotāja dzimuma
-SELECT rating.rating, [user].gender, count(*) as count
+SELECT rating.rating, users.gender, count(*) as count
 FROM rating
-    JOIN [user] on rating.user_id = [user].id
-GROUP BY rating.rating, [user].gender
+    JOIN users on rating.user_id = users.id
+GROUP BY rating.rating, users.gender
 ORDER BY rating DESC
 
 -- Izvada katra lietotaja reitingu skaitu.
 SELECT username, (SELECT count(*)
     FROM rating
-    WHERE rating.user_id = [user].id) as count
-from [user]
+    WHERE rating.user_id = users.id) as count
+from users
 
 -- Izvada visus reitingus, kuru vertiba ir virs vidējās
 SELECT * FROM rating
@@ -194,8 +194,8 @@ where rating > (SELECT avg(rating) FROM rating)
 
 DELETE FROM rating
 DELETE FROM movie
-DELETE FROM [user]
+DELETE FROM users
 
 DROP TABLE rating
 DROP TABLE movie
-DROP TABLE [user]
+DROP TABLE users
