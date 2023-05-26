@@ -1,3 +1,4 @@
+-- B variants
 CREATE TABLE valsts
 (
     nosaukums NVARCHAR(64) NOT NULL,
@@ -94,11 +95,49 @@ UPDATE valsts
 SET galvaspilseta_id = 10
 WHERE valsts_kods = 'FR';
 
-SELECT *
-FROM valsts;
-SELECT *
-FROM pilseta;
+-- Triju tabulu Join
+SELECT pilseta1.nosaukums AS pilseta, valsts.nosaukums AS valsts, pilseta2.nosaukums AS valsts_galvaspilseta
+FROM pilseta AS pilseta1
+    INNER JOIN valsts ON pilseta1.valsts_kods = valsts.valsts_kods
+    INNER JOIN pilseta AS pilseta2 ON valsts.galvaspilseta_id = pilseta2.id;
 
+-- Salikts apakšvaicājums
+-- Kā analoģisku piemeru izmantoju savas tabulas ignorejot galvaspilsetas ārejo atslēgu
+-- Atrod videjo iedzivotaju skaitu pilsētam no patvaļīgas valsts
+SELECT avg(iedziivotaji_sk) as videjais
+FROM pilseta
+WHERE valsts_kods = 'LV';
+-- Atrod videjo iedzivotaju skaitu pilsētam no valsts, kurai tas ir vieslielakais
+SELECT TOP 1
+    (SELECT avg(iedziivotaji_sk) as videjais
+    FROM pilseta
+    WHERE pilseta.valsts_kods = valsts.valsts_kods) AS max_videjais
+FROM valsts
+ORDER BY max_videjais DESC;
+-- Atrod nosaukumu valstīj, kurai videjais pilsetu iedzivotaju skaits ir vieslielakais
+SELECT valsts.nosaukums
+FROM valsts
+WHERE 
+    (SELECT avg(iedziivotaji_sk) as videjais
+FROM pilseta
+WHERE pilseta.valsts_kods = valsts.valsts_kods) = 
+    (SELECT TOP 1
+    (SELECT avg(iedziivotaji_sk) as videjais
+    FROM pilseta
+    WHERE pilseta.valsts_kods = valsts2.valsts_kods) AS max_videjais
+FROM valsts as valsts2
+ORDER BY max_videjais DESC);
+
+-- SQL 'loga' funkcija
+SELECT
+    pilseta.nosaukums AS pilseta,
+    valsts.nosaukums AS valsts,
+    pilseta.iedziivotaji_sk AS iedzivotaji_pilseta,
+    sum(pilseta.iedziivotaji_sk) OVER (PARTITION BY valsts.nosaukums) AS iedzivotaji_summa_valsts
+FROM pilseta
+    INNER JOIN valsts ON pilseta.valsts_kods = valsts.valsts_kods;
+
+-- Tabulu izmešana
 ALTER TABLE valsts
 DROP CONSTRAINT galvaspilseta_id;
 DROP TABLE pilseta;
