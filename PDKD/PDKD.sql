@@ -1,10 +1,12 @@
-CREATE TABLE valsts (
+CREATE TABLE valsts
+(
     nosaukums NVARCHAR(64) NOT NULL,
     valsts_kods NVARCHAR(64) NOT NULL,
     galvaspilseta_id INT,
     PRIMARY KEY (valsts_kods)
 );
-CREATE TABLE pilseta (
+CREATE TABLE pilseta
+(
     id INT,
     nosaukums NVARCHAR(64) NOT NULL,
     iedziivotaji_sk INT NOT NULL,
@@ -56,7 +58,7 @@ VALUES
     (23, 'Kazana', 1216965, 'RU'),
     (24, 'Čikāga', 2705994, 'US'),
     (25, 'Vankūvera', 631486, 'CA'),
-    (26, 'Čongkinga', 30165500, 'CN'),  
+    (26, 'Čongkinga', 30165500, 'CN'),
     (27, 'Brisbena', 2279400, 'AU'),
     (28, 'Nagoja', 2266700, 'JP'),
     (29, 'Hamburga', 1841179, 'DE'),
@@ -92,8 +94,10 @@ UPDATE valsts
 SET galvaspilseta_id = 10
 WHERE valsts_kods = 'FR';
 
-SELECT * FROM valsts;
-SELECT * FROM pilseta;
+SELECT *
+FROM valsts;
+SELECT *
+FROM pilseta;
 
 ALTER TABLE valsts
 DROP CONSTRAINT galvaspilseta_id;
